@@ -5,10 +5,14 @@ class Whitehall::AssetManagerAndQuarantinedFileStorage < CarrierWave::Storage::A
   end
 
   def retrieve!(identifier)
-    asset_manager_file = Whitehall::AssetManagerStorage.new(uploader).retrieve!(identifier)
     quarantined_file = Whitehall::QuarantinedFileStorage.new(uploader).retrieve!(identifier)
 
-    File.new(asset_manager_file, quarantined_file)
+    if Whitehall.use_asset_manager
+      asset_manager_file = Whitehall::AssetManagerStorage.new(uploader).retrieve!(identifier)
+      File.new(asset_manager_file, quarantined_file)
+    else
+      quarantined_file
+    end
   end
 
   class File

@@ -45,7 +45,15 @@ class Whitehall::AssetManagerAndQuarantinedFileStorageTest < ActiveSupport::Test
     assert_equal 'stored-file', @storage.store!(@file)
   end
 
-  test 'returns the composite asset manager and quarantined file' do
+  test 'returns the quarantined file if use_asset_manager feature flag is false' do
+    Whitehall.stubs(:use_asset_manager).returns(false)
+
+    @quarantined_file_storage.stubs(:retrieve!).with('identifier').returns('retrieved-quarantined-file')
+
+    assert_equal 'retrieved-quarantined-file', @storage.retrieve!('identifier')
+  end
+
+  test 'returns the composite asset manager and quarantined file if use_asset_manager feature flag is true' do
     @quarantined_file_storage.stubs(:retrieve!).with('identifier').returns('retrieved-quarantined-file')
     @asset_manager_storage.stubs(:retrieve!).with('identifier').returns('retrieved-asset-manager-file')
 
