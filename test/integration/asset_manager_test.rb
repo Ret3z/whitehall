@@ -41,7 +41,9 @@ class AssetManagerIntegrationTest < ActiveSupport::TestCase
     Services.asset_manager.expects(:delete_asset)
 
     organisation.remove_logo!
+    organisation.reload
 
     refute File.exist?(logo_path)
+    refute organisation.logo.present?
   end
 end
